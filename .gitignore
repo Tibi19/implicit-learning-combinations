@@ -40,3 +40,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Log files can get pretty big
+.txt
+### CSV files should not be disclosed
+.csv

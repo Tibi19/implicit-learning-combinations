@@ -10,13 +10,13 @@ fun Data.Group.checkWordSequencesRepeating(): Boolean {
     val wordToValueMap = acquisitionTextPairs.asWordToValueMap()
     val acquisitionValuesPairs = acquisitionTextPairs.asValuesPairs(wordToValueMap)
     val sequences = mutableSetOf<Values>()
-    acquisitionValuesPairs.forEach { values ->
-        sequences.addAll(values.getSequences())
+    acquisitionValuesPairs.forEach { valuesPair ->
+        sequences.addAll(valuesPair.getSequences())
     }
 
-    val testingValueArrayPairs = testingTextPairs.asValuesPairs(wordToValueMap)
-    testingValueArrayPairs.forEachIndexed { i, valueArrayPair ->
-        val testingSequences = valueArrayPair.getSequences()
+    val testingValuesPairs = testingTextPairs.asValuesPairs(wordToValueMap)
+    testingValuesPairs.forEachIndexed { i, valuesPair ->
+        val testingSequences = valuesPair.getSequences()
         for (sequence in testingSequences) {
             if (sequences.contains(sequence)) {
                 val textPair = testingTextPairs[i]
@@ -56,7 +56,6 @@ private fun List<Pair<String, String>>.asWordToValueMap(): Map<String, Int> {
     val wordsSet = mutableSetOf<String>()
     for (textsPair in this) {
         val words = "${textsPair.first} ${textsPair.second}".split(" ")
-        println(words)
         wordsSet.addAll(words)
     }
     for ((i, word) in wordsSet.withIndex()) {
@@ -92,32 +91,15 @@ private fun List<Data.Association>.toTextPairs(): List<Pair<String, String>> =
 private fun String.stripUnneededSymbols(): String =
     this
         .replace(".", "")
-        .replace("nu ", "") // TODO Check if this is a viable product option
-        .replace("ma ", "")
-
+        .replace("nu ", "")
 private fun Pair<Values, Values>.getSequences(): Set<Values> {
-    val firstSequences = first.getSequences()
-    val secondSequences = second.getSequences()
     val sequences = mutableSetOf<Values>()
-    for (sequenceFirst in firstSequences) {
-        for (sequenceSecond in secondSequences) {
-            val newSequence = Values(sequenceFirst.intArray + sequenceSecond.intArray)
+    for (valueFirst in first.intArray) {
+        for (valueSecond in second.intArray) {
+            val newSequence = Values(intArrayOf(valueFirst, valueSecond))
             newSequence.sortDescending()
             sequences.add(newSequence)
         }
-    }
-    return sequences
-}
-
-private fun Values.getSequences(): Set<Values> {
-    val sequences = mutableSetOf<Values>()
-    for (value in intArray) {
-        for (sequence in sequences.toList()) {
-            val newValues = Values(sequence.intArray + value)
-            sequences.add(newValues)
-        }
-        val newValues = Values(intArrayOf(value))
-        sequences.add(newValues)
     }
     return sequences
 }

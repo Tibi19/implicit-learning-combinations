@@ -4,7 +4,8 @@ import constraint.checkAssociationsRepeating
 
 fun produceGroupsFromPhasesChunk(phases: List<Data.Phase>): List<Data.Group> {
     val groups = mutableListOf<Data.Group>()
-    for (phase in phases) {
+    for ((i, phase) in phases.withIndex()) {
+        println("Producing groups for phase $i of ${phases.size}")
         val matchingPhases = phases.filter {
             val possibleGroup = Data.Group(acquisition = phase, testing = it)
             possibleGroup.checkAssociationsRepeating()

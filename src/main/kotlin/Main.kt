@@ -1,20 +1,47 @@
 import constraint.*
 import io.*
+import kotlinx.coroutines.*
 import producer.*
 import util.getMillis
 import util.printDurationFor
 
 const val ROOT_PATH = "src/main/resources"
 const val POOL_PATH = "${ROOT_PATH}/pool.csv"
+const val PHASES_TO_PRODUCE = 3000
 
 fun main(args: Array<String>) {
     val pool = readPool(POOL_PATH)
     val facetsPool = produceFacets(pool)
     Checker.init(pool, facetsPool)
-    testWriteLogger(pool)
+
+    val phases = List(PHASES_TO_PRODUCE) {
+        produceRandomPhase(pool)
+    }
+    val groups = produceGroupsFromPhasesChunk(phases)
+
+    runBlocking {
+        groups.forEachIndexed { i, group ->
+            println("Checking group $i of ${groups.size}")
+            launch(Dispatchers.IO) {
+                resolveGroup(group)
+            }
+        }
+    }
+
+    writeLog()
 }
 
+fun resolveGroup(group: Data.Group) {
+    val passedGroupA = Checker.checkGroupHeavyWithLogger(group)
+    if (!passedGroupA) return
 
+    val groupB = produceParallelGroup(group)
+    val passedGroupB = Checker.checkGroupHeavyWithLogger(groupB, true)
+    if (!passedGroupB) return
+
+    val experiment = Data.Experiment(group, groupB)
+    writeExperiment(experiment)
+}
 
 /************** TESTS **************/
 
@@ -191,7 +218,11 @@ fun testWordSequencesRepeating(pool: Data.Pool) {
             }
     )
     val group = Data.Group(phaseA, phaseT)
+
+    val start = getMillis()
     val checkWordSequencesRepeatingPassed = group.checkWordSequencesRepeating()
+    val end = getMillis()
+    printDurationFor(start, end, "Word sequences repeating check")
     println("Word sequences repeating passed? $checkWordSequencesRepeatingPassed")
 }
 
