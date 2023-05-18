@@ -7,7 +7,7 @@ import util.printDurationFor
 
 const val ROOT_PATH = "src/main/resources"
 const val POOL_PATH = "${ROOT_PATH}/pool.csv"
-const val PHASES_TO_PRODUCE = 3000
+const val PHASES_TO_PRODUCE = 2000
 
 fun main(args: Array<String>) {
     val pool = readPool(POOL_PATH)
