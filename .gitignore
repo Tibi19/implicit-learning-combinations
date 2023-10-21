@@ -42,6 +42,7 @@ bin/
 .DS_Store
 
 ### Log files can get pretty big
-.txt
+*.txt
 ### CSV files should not be disclosed
-.csv
+*.csv
+*.csv#
