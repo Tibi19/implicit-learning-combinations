@@ -6,14 +6,14 @@ import producer.*
 const val ROOT_PATH = "src/main/resources"
 const val POOL_PATH = "${ROOT_PATH}/pool.csv"
 const val POOL2_PATH = "${ROOT_PATH}/pool2.csv"
-const val PHASES_TO_PRODUCE = 2000
+const val PHASES_TO_PRODUCE = 2200
 
 fun main(args: Array<String>) {
-    runCombinations()
+    runRandomCombinations()
 }
 
-fun runCombinations() {
-    val pool = readPool(POOL2_PATH)
+fun runRandomCombinations() {
+    val pool = readPool2(POOL2_PATH)
     val facetsPool = produceFacets(pool)
     Checker.init(pool, facetsPool)
 
@@ -32,11 +32,13 @@ fun runCombinations() {
     }
 
     writeLog()
+    println("DONE")
 }
 
 fun resolveGroup(group: Data.Group) {
     val passedGroupA = Checker.checkGroupHeavyWithLogger(group)
     if (!passedGroupA) return
+    writeGroup(group)
 
     val groupB = produceParallelGroup(group)
     val passedGroupB = Checker.checkGroupHeavyWithLogger(groupB, true)

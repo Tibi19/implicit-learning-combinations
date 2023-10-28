@@ -11,6 +11,7 @@ fun writeExperiment(experiment: Data.Experiment) {
         appendGroup(experiment.groupB, GroupType.B)
     }
     val path = getUniquePath("experiment")
+    println("Writing experiment...")
     File(path).writeText(text)
 }
 
@@ -19,6 +20,7 @@ fun writeGroup(group: Data.Group) {
         appendGroup(group)
     }
     val path = getUniquePath("group")
+    println("Writing group...")
     File(path).writeText(text)
 }
 
@@ -36,5 +38,6 @@ private fun getUniquePath(title: String, extension: String = ".csv") =
 fun writeLog() {
     Logger.registerTimeOfWriting()
     val path = getUniquePath("log", ".txt")
+    println("Writing log...")
     File(path).writeText(Logger.text)
 }
